@@ -5,7 +5,7 @@ class Users extends Model {
   public username!: string;
   public role!: string;
   public email!: string;
-  private _password!: string;
+  public password!: string;
 }
 
 Users.init({
