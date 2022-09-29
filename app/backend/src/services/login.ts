@@ -17,4 +17,9 @@ export default class LoginService {
 
     return { token };
   }
+
+  public async userType(email: string) {
+    const user = await this._userModel.findOne({ where: { email } });
+    return { role: user?.role };
+  }
 }
