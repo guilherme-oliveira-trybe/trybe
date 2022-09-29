@@ -3,7 +3,6 @@ import 'express-async-errors';
 import * as cors from 'cors';
 import errorMiddleware from './middlewares/errors';
 import loginRoute from './routes/login';
-import loginValidation from './middlewares/loginValidation';
 
 class App {
   public app: express.Express;
@@ -29,7 +28,7 @@ class App {
     this.app.use(express.json());
     this.app.use(cors());
     this.app.use(accessControl);
-    this.app.use('/login', loginValidation, loginRoute);
+    this.app.use('/login', loginRoute);
     this.app.use(errorMiddleware);
   }
 
