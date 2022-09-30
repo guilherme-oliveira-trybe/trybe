@@ -19,7 +19,7 @@ export default class LoginService {
   }
 
   public async userType(email: string) {
-    const user = await this._userModel.findOne({ where: { email } });
-    return { role: user?.role };
+    const user = await this._userModel.findOne({ where: { email }, attributes: ['role'] });
+    return user;
   }
 }
