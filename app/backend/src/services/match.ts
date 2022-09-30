@@ -19,8 +19,24 @@ export default class MatchService {
     return matches;
   }
 
-  // public async getById(id: number) {
-  //   const team = await this._teamModel.findByPk(id);
-  //   return team;
-  // }
+  public async getByProgress(query: string) {
+    let isInProgress = 1;
+
+    if (query === 'false') {
+      isInProgress = 0;
+    }
+
+    const matches = await this._matchModel.findAll({ where: { inProgress: isInProgress },
+      include: [{
+        model: Teams,
+        as: 'teamHome',
+        attributes: ['teamName'],
+      }, {
+        model: Teams,
+        as: 'teamAway',
+        attributes: ['teamName'],
+      }],
+    });
+    return matches;
+  }
 }
