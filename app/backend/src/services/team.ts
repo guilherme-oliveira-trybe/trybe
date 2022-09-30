@@ -7,4 +7,9 @@ export default class TeamService {
     const teams = await this._teamModel.findAll();
     return teams;
   }
+
+  public async getById(id: number) {
+    const team = await this._teamModel.findByPk(id);
+    return team;
+  }
 }
