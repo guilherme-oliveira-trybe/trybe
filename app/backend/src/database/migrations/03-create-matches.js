@@ -43,6 +43,7 @@ module.exports = {
         type: Sequelize.INTEGER,
         allowNull: false,
         field: 'in_progress',
+        defaultValue: 1
       }
     });
   },
