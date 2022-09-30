@@ -30,6 +30,7 @@ class App {
     this.app.use(accessControl);
     this.app.use('/login', routes.loginRoute);
     this.app.use('/teams', routes.teamRoute);
+    this.app.use('/matches', routes.matchRoute);
     this.app.use(errorMiddleware);
   }
 
