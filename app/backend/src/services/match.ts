@@ -1,3 +1,4 @@
+import { Create } from '../interfaces/match';
 import Match from '../database/models/Match';
 import Teams from '../database/models/Team';
 
@@ -38,5 +39,13 @@ export default class MatchService {
       }],
     });
     return matches;
+  }
+
+  public async create(info: Create) {
+    const { id } = await this._matchModel.create(info);
+
+    const result = await this._matchModel.findByPk(id);
+
+    return result;
   }
 }
