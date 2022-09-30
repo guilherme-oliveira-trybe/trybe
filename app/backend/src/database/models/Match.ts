@@ -3,6 +3,7 @@ import db from '.';
 import Teams from './Team';
 
 class Matches extends Model {
+  public id: number;
   public homeTeam: number;
   public homeTeamGoals: number;
   public awayTeam: number;
@@ -12,10 +13,10 @@ class Matches extends Model {
 
 Matches.init({
   id: {
+    type: DataTypes.INTEGER,
     primaryKey: true,
     allowNull: false,
     autoIncrement: true,
-    type: DataTypes.INTEGER,
   },
   homeTeam: {
     type: DataTypes.INTEGER,
@@ -35,7 +36,6 @@ Matches.init({
   },
   inProgress: {
     type: DataTypes.INTEGER,
-    allowNull: false,
   },
 }, {
   underscored: true,
