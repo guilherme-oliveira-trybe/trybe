@@ -1,6 +1,7 @@
 import { Create } from '../interfaces/match';
 import Match from '../database/models/Match';
 import Teams from '../database/models/Team';
+import CustomError from '../errors/CustomError';
 
 export default class MatchService {
   private _matchModel = Match;
@@ -47,6 +48,15 @@ export default class MatchService {
     const result = await this._matchModel.findByPk(id);
 
     return result;
+  }
+
+  public async updateMatchProgress(id: number) {
+    const match = await this._matchModel.findByPk(id);
+    if (!match) throw new CustomError(404, 'Match not found');
+
+    await this._matchModel.update({ inProgress: 0 }, { where: { id } });
+
+    return { message: 'Finished' };
   }
 
   private convertInProgress(inProgress: string): number {
