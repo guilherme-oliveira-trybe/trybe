@@ -62,6 +62,7 @@ export default class MatchService {
   private convertInProgress(inProgress: string): number {
     if (inProgress === 'false') {
       this._isInProgress = 0;
+      return this._isInProgress;
     }
     this._isInProgress = 1;
 
