@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import { Create } from '../interfaces/match';
+import { Create, UpdateInfo } from '../interfaces/match';
 import MatchService from '../services/match';
 
 interface Query {
@@ -35,6 +35,15 @@ export default class MatchController {
     const { id } = req.params;
 
     const result = await this._matchService.updateMatchProgress(Number(id));
+
+    return res.status(200).json(result);
+  }
+
+  public async updateMatch(req: Request, res: Response) {
+    const { id } = req.params;
+    const { homeTeamGoals, awayTeamGoals } = req.body as UpdateInfo;
+
+    const result = await this._matchService.updateMatch(Number(id), homeTeamGoals, awayTeamGoals);
 
     return res.status(200).json(result);
   }
