@@ -6,6 +6,7 @@ const matchController = new MatchController();
 const matchRoute = Router();
 
 matchRoute.get('/', (req, res) => matchController.getAll(req, res));
+matchRoute.patch('/:id/finish', (req, res) => matchController.updateMatchProgress(req, res));
 matchRoute.post(
   '/',
   (req, res, next) => auth.verify(req as NewRequest, res, next),
