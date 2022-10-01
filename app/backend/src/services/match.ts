@@ -5,8 +5,10 @@ import CustomError from '../errors/CustomError';
 
 export default class MatchService {
   private _matchModel = Match;
+  private _teamModel = Teams;
   private _isInProgress: number;
   private _isEqualTeam: boolean;
+  private _isExistTeams: boolean;
 
   public async getAll() {
     const matches = await this._matchModel.findAll({
@@ -41,9 +43,14 @@ export default class MatchService {
   }
 
   public async create(info: Create) {
-    const isEqualTeam = this.verifyTeams(info);
+    const isEqualTeam = this.verifyIsEqualTeams(info);
     if (isEqualTeam) {
       throw new CustomError(401, 'It is not possible to create a match with two equal teams');
+    }
+
+    const isExistTeams = await this.verifyIsExistTeams(info);
+    if (!isExistTeams) {
+      throw new CustomError(404, 'There is no team with such id!');
     }
 
     const matchStatus = this.convertInProgress(info.inProgress);
@@ -75,7 +82,7 @@ export default class MatchService {
     return this._isInProgress;
   }
 
-  private verifyTeams(info: Create): boolean {
+  private verifyIsEqualTeams(info: Create): boolean {
     this._isEqualTeam = false;
 
     if (info.homeTeam === info.awayTeam) {
@@ -84,5 +91,18 @@ export default class MatchService {
     }
 
     return this._isEqualTeam;
+  }
+
+  private async verifyIsExistTeams(info: Create): Promise<boolean> {
+    this._isExistTeams = true;
+    const homeTeam = await this._teamModel.findByPk(info.homeTeam);
+    const awayTeam = await this._teamModel.findByPk(info.awayTeam);
+
+    if (!homeTeam || !awayTeam) {
+      this._isExistTeams = false;
+      return this._isExistTeams;
+    }
+
+    return this._isExistTeams;
   }
 }
