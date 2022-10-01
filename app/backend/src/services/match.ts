@@ -72,6 +72,17 @@ export default class MatchService {
     return { message: 'Finished' };
   }
 
+  public async updateMatch(id: number, homeTeamGoals: number, awayTeamGoals: number) {
+    const match = await this._matchModel.findByPk(id);
+    if (!match) throw new CustomError(404, 'Match not found');
+
+    await this._matchModel.update({ homeTeamGoals, awayTeamGoals }, { where: { id } });
+
+    const result = await this._matchModel.findByPk(id);
+
+    return result;
+  }
+
   private convertInProgress(inProgress: string): number {
     if (inProgress === 'false') {
       this._isInProgress = 0;
