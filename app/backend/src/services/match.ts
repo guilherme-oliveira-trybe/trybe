@@ -6,6 +6,7 @@ import CustomError from '../errors/CustomError';
 export default class MatchService {
   private _matchModel = Match;
   private _isInProgress: number;
+  private _isEqualTeam: boolean;
 
   public async getAll() {
     const matches = await this._matchModel.findAll({
@@ -40,6 +41,11 @@ export default class MatchService {
   }
 
   public async create(info: Create) {
+    const isEqualTeam = this.verifyTeams(info);
+    if (isEqualTeam) {
+      throw new CustomError(401, 'It is not possible to create a match with two equal teams');
+    }
+
     const matchStatus = this.convertInProgress(info.inProgress);
     const matchInfo = { ...info, inProgress: matchStatus };
 
@@ -67,5 +73,16 @@ export default class MatchService {
     this._isInProgress = 1;
 
     return this._isInProgress;
+  }
+
+  private verifyTeams(info: Create): boolean {
+    this._isEqualTeam = false;
+
+    if (info.homeTeam === info.awayTeam) {
+      this._isEqualTeam = true;
+      return this._isEqualTeam;
+    }
+
+    return this._isEqualTeam;
   }
 }
