@@ -30,12 +30,4 @@ export default class MatchController {
 
     return res.status(201).json(result);
   }
-
-  // public async getByProgress(req: Request, res: Response) {
-  //   const { inProgress } = req.query as unknown as Query;
-
-  //   const result = await this._matchService.getByProgress(inProgress);
-
-  //   return res.status(200).json(result);
-  // }
 }
