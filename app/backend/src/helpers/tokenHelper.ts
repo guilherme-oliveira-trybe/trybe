@@ -15,7 +15,7 @@ const tokenHelper = {
       const dados = JWT.verify(payload, JWT_SECRET as string);
       return dados;
     } catch (error) {
-      if (error) throw new CustomError(401, 'Expired or invalid token');
+      if (error) throw new CustomError(401, 'Token must be a valid token');
     }
   },
 };
