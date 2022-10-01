@@ -4,6 +4,7 @@ import Teams from '../database/models/Team';
 
 export default class MatchService {
   private _matchModel = Match;
+  private _isInProgress: number;
 
   public async getAll() {
     const matches = await this._matchModel.findAll({
@@ -21,13 +22,9 @@ export default class MatchService {
   }
 
   public async getByProgress(query: string) {
-    let isInProgress = 1;
+    const matchStatus = this.convertInProgress(query);
 
-    if (query === 'false') {
-      isInProgress = 0;
-    }
-
-    const matches = await this._matchModel.findAll({ where: { inProgress: isInProgress },
+    const matches = await this._matchModel.findAll({ where: { inProgress: matchStatus },
       include: [{
         model: Teams,
         as: 'teamHome',
@@ -42,10 +39,22 @@ export default class MatchService {
   }
 
   public async create(info: Create) {
-    const { id } = await this._matchModel.create(info);
+    const matchStatus = this.convertInProgress(info.inProgress);
+    const matchInfo = { ...info, inProgress: matchStatus };
+
+    const { id } = await this._matchModel.create(matchInfo);
 
     const result = await this._matchModel.findByPk(id);
 
     return result;
+  }
+
+  private convertInProgress(inProgress: string): number {
+    if (inProgress === 'false') {
+      this._isInProgress = 0;
+    }
+    this._isInProgress = 1;
+
+    return this._isInProgress;
   }
 }
