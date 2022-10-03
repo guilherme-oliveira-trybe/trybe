@@ -13,7 +13,7 @@ const { expect } = chai;
 
 describe('Rota /login', () =>{
   describe('POST', () => {
-    describe('Caso ok', () => {
+    describe('Caso usuário encontrado', () => {
       before(() => {
         Sinon.stub(Users, 'findOne').resolves({
           id: 1,
@@ -28,7 +28,7 @@ describe('Rota /login', () =>{
         (Users.findOne as Sinon.SinonStub).restore();
       })
   
-      it('Retorna status 200 e contém a propriedade token', async () => {
+      it('Se email e password correto, retorna status 200 e contém a propriedade token', async () => {
         const response: Response = await chai.request(app)
         .post('/login')
         .send({ email: 'admin@admin.com', password: 'secret_admin'});
@@ -36,6 +36,15 @@ describe('Rota /login', () =>{
         expect(response.status).to.be.equal(200);
         expect(response.body).to.have.property('token');
       })
+
+      // it('Se password incorreto, retorna erro', async () => {
+      //   const response: Response = await chai.request(app)
+      //   .post('/login')
+      //   .send({ email: 'admin@admin.com', password: 'asenhataerrada' });
+  
+      //   expect(response.status).to.be.equal(401);
+      //   expect(response.body).to.deep.equal({ message: 'Incorrect email or password'});
+      // })
     })
 
     describe('Teste em caso de usuário não encontrado', () => {
