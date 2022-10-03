@@ -85,7 +85,7 @@ describe('Rota /login', () =>{
         expect(response.body).to.deep.equal({ message: '"password" is required'});
       })
 
-      it('Verifica lançamento de erro, caso não seja passado email e/ou passwarod vazios', async () => {
+      it('Verifica lançamento de erro, caso não seja passado email e/ou password vazios', async () => {
         const response: Response = await chai.request(app)
         .post('/login')
         .send({ email: '', password: '' });
