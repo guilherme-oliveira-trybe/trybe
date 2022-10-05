@@ -32,3 +32,5 @@ export interface MatchesResult {
   goalsBalance: number,
   efficiency: number,
 }
+
+export type FieldType = 'home' | 'away';

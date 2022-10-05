@@ -1,4 +1,4 @@
-import { InfoMatches, MatchesResult, TeamInfoMatches } from '../interfaces/match';
+import { FieldType, InfoMatches, MatchesResult, TeamInfoMatches } from '../interfaces/match';
 import Match from '../database/models/Match';
 import Teams from '../database/models/Team';
 
@@ -7,7 +7,14 @@ export default class LeaderBoardService {
 
   public async getLeaderBoardHome() {
     const matchesByTeam = await this.getAllMatchesByTeam();
-    const matchesInfo = this.handleInfo(matchesByTeam);
+    const matchesInfo = this.handleInfo(matchesByTeam, 'home');
+    const orderResult = this.orderMatchResult(matchesInfo);
+    return orderResult;
+  }
+
+  public async getLeaderBoardAway() {
+    const matchesByTeam = await this.getAllMatchesByTeam();
+    const matchesInfo = this.handleInfo(matchesByTeam, 'away');
     const orderResult = this.orderMatchResult(matchesInfo);
     return orderResult;
   }
@@ -28,7 +35,7 @@ export default class LeaderBoardService {
     return result as unknown as TeamInfoMatches[];
   }
 
-  private checkInfo = (info: InfoMatches[]) => {
+  private checkInfoHome = (info: InfoMatches[]) => {
     let rng = {
       points: 0, victories: 0, draws: 0, losses: 0, goalsFavor: 0, goalsOwn: 0 };
 
@@ -50,9 +57,33 @@ export default class LeaderBoardService {
     return { ...rng, totalGames, goalsBalance, efficiency };
   };
 
-  private handleInfo = (array: TeamInfoMatches[]) => {
+  private checkInfoAway = (info: InfoMatches[]) => {
+    let rng = {
+      points: 0, victories: 0, draws: 0, losses: 0, goalsFavor: 0, goalsOwn: 0 };
+
+    info.forEach((match) => {
+      if (match.awayTeamGoals === match.homeTeamGoals) {
+        rng = { ...rng, draws: rng.draws + 1, points: rng.points + 1 };
+      } else if (match.awayTeamGoals > match.homeTeamGoals) {
+        rng = { ...rng, victories: rng.victories += 1, points: rng.points += 3 };
+      } else { rng.losses += 1; }
+
+      rng.goalsFavor += match.awayTeamGoals;
+      rng.goalsOwn += match.homeTeamGoals;
+    });
+
+    const totalGames = info.length;
+    const goalsBalance = rng.goalsFavor - rng.goalsOwn;
+    const efficiency = Number(((rng.points / (totalGames * 3)) * 100).toFixed(2));
+
+    return { ...rng, totalGames, goalsBalance, efficiency };
+  };
+
+  private handleInfo = (array: TeamInfoMatches[], status: FieldType) => {
     const infoHome = array.map((team) => {
-      const check = this.checkInfo(team.homeTeam);
+      const check = status === 'home'
+        ? this.checkInfoHome(team.homeTeam) : this.checkInfoAway(team.awayTeam);
+
       const result = {
         name: team.teamName,
         totalPoints: check.points,
@@ -65,6 +96,7 @@ export default class LeaderBoardService {
         goalsBalance: check.goalsBalance,
         efficiency: check.efficiency,
       };
+
       return result;
     });
     return infoHome;

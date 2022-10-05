@@ -4,6 +4,7 @@ import LeaderBoardController from '../controllers/leaderBoard';
 const leaderBoardController = new LeaderBoardController();
 const leaderBoardRoute = Router();
 
-leaderBoardRoute.get('/home', (req, res) => leaderBoardController.getAllMatchesByTeam(req, res));
+leaderBoardRoute.get('/home', (req, res) => leaderBoardController.getLeaderBoardHome(req, res));
+leaderBoardRoute.get('/away', (req, res) => leaderBoardController.getLeaderBoardAway(req, res));
 
 export default leaderBoardRoute;
