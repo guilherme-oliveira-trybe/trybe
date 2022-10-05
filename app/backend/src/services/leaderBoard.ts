@@ -19,6 +19,13 @@ export default class LeaderBoardService {
     return orderResult;
   }
 
+  public async getLeaderBoard() {
+    const matchesByTeam = await this.getAllMatchesByTeam();
+    const matchesInfo = this.handleGeneralRanking(matchesByTeam);
+    const orderResult = this.orderMatchResult(matchesInfo);
+    return orderResult;
+  }
+
   private async getAllMatchesByTeam() {
     const result = await this._teamModel.findAll({
       include: [{
@@ -102,12 +109,35 @@ export default class LeaderBoardService {
     return infoHome;
   };
 
-  private orderMatchResult = (results: MatchesResult[]) => {
-    const teste4 = results.sort((a, b) => a.goalsOwn - b.goalsOwn);
-    const teste3 = teste4.sort((a, b) => b.goalsFavor - a.goalsFavor);
-    const teste2 = teste3.sort((a, b) => b.goalsBalance - a.goalsBalance);
-    const teste = teste2.sort((a, b) => b.totalPoints - a.totalPoints);
+  private handleGeneralRanking = (array: TeamInfoMatches[]) => {
+    const infoHome = array.map((team) => {
+      const matchesHome = this.checkInfoHome(team.homeTeam);
+      const matchesAway = this.checkInfoAway(team.awayTeam);
 
-    return teste;
+      const result = {
+        name: team.teamName,
+        totalPoints: matchesHome.points + matchesAway.points,
+        totalGames: matchesHome.totalGames + matchesAway.totalGames,
+        totalVictories: matchesHome.victories + matchesAway.victories,
+        totalDraws: matchesHome.draws + matchesAway.draws,
+        totalLosses: matchesHome.losses + matchesAway.losses,
+        goalsFavor: matchesHome.goalsFavor + matchesAway.goalsFavor,
+        goalsOwn: matchesHome.goalsOwn + matchesAway.goalsOwn,
+        goalsBalance: matchesHome.goalsBalance + matchesAway.goalsBalance,
+      };
+
+      return { ...result,
+        efficiency: Number(((result.totalPoints / (result.totalGames * 3)) * 100).toFixed(2)) };
+    });
+    return infoHome;
+  };
+
+  private orderMatchResult = (results: MatchesResult[]) => {
+    const sortByGoalsOwn = results.sort((a, b) => a.goalsOwn - b.goalsOwn);
+    const sortByGoalsFavor = sortByGoalsOwn.sort((a, b) => b.goalsFavor - a.goalsFavor);
+    const sortByGoalsBalance = sortByGoalsFavor.sort((a, b) => b.goalsBalance - a.goalsBalance);
+    const sortByTotalPoints = sortByGoalsBalance.sort((a, b) => b.totalPoints - a.totalPoints);
+
+    return sortByTotalPoints;
   };
 }
